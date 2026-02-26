@@ -67,15 +67,17 @@ async function run() {
       const findUser = await userCollection.findOne({
         email: user.email,
       });
+      if (!findUser) {
+        return res.status(404).send({ message: "User not found" });
+      }
       const passwordsMatch = bcrypt.compareSync(
         user.password,
         findUser.password,
       );
-      console.log(passwordsMatch);
+      if (!passwordsMatch) {
+        return res.status(401).send({ message: "Wrong password" });
+      }
 
-      if (findUser)
-        // res.send(findUser);
-        console.log(findUser);
       res.send(findUser);
     });
 
