@@ -39,7 +39,7 @@ async function run() {
     //register user #########################################
     app.post("/register", async (req, res) => {
       const user = req.body;
-      console.log(user);
+      // console.log(user);
 
       const user_email = user.email;
       const existingUser = await userCollection.findOne({ email: user_email });
@@ -49,6 +49,17 @@ async function run() {
         const result = await userCollection.insertOne(user);
         res.send(result);
       }
+    });
+
+    //login user ##############################################
+    app.post("/login", async (req, res) => {
+      const user = req.body;
+      const findUser = await userCollection.findOne({
+        email: user.email,
+      });
+      // res.send(findUser);
+      console.log(findUser);
+      res.send(findUser);
     });
 
     // Send a ping to confirm a successful connection
