@@ -36,9 +36,10 @@ async function run() {
     const database = client.db("TrustBridge");
     const userCollection = database.collection("users");
 
-    //register user
+    //register user #########################################
     app.post("/register", async (req, res) => {
       const user = req.body;
+      console.log(user);
 
       const user_email = user.email;
       const existingUser = await userCollection.findOne({ email: user_email });
