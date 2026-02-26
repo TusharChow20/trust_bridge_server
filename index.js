@@ -3,6 +3,7 @@ const cors = require("cors");
 require("dotenv").config();
 const app = express();
 const port = 4000;
+const bcrypt = require("bcryptjs");
 
 // Middleware
 app.use(cors());
@@ -39,14 +40,23 @@ async function run() {
     //register user #########################################
     app.post("/register", async (req, res) => {
       const user = req.body;
-      // console.log(user);
+      console.log(user);
+
+      //salt
+      const salt = bcrypt.genSaltSync(10);
 
       const user_email = user.email;
       const existingUser = await userCollection.findOne({ email: user_email });
       if (existingUser) {
         res.send("user already exists");
       } else {
-        const result = await userCollection.insertOne(user);
+        const hashedPassword = bcrypt.hashSync(user.password, salt);
+
+        const result = await userCollection.insertOne({
+          name: user.name,
+          email: user_email,
+          password: hashedPassword,
+        });
         res.send(result);
       }
     });
@@ -57,8 +67,15 @@ async function run() {
       const findUser = await userCollection.findOne({
         email: user.email,
       });
-      // res.send(findUser);
-      console.log(findUser);
+      const passwordsMatch = bcrypt.compareSync(
+        user.password,
+        findUser.password,
+      );
+      console.log(passwordsMatch);
+
+      if (findUser)
+        // res.send(findUser);
+        console.log(findUser);
       res.send(findUser);
     });
 
