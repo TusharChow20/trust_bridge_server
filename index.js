@@ -78,7 +78,11 @@ async function run() {
         return res.status(401).send({ message: "Wrong password" });
       }
 
-      res.send(findUser);
+      res.send({
+        _id: findUser._id,
+        name: findUser.name,
+        email: findUser.email,
+      });
     });
 
     // Send a ping to confirm a successful connection
