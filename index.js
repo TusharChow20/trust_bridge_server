@@ -40,7 +40,7 @@ async function run() {
     //register user #########################################
     app.post("/register", async (req, res) => {
       const user = req.body;
-      console.log(user);
+      // console.log(user);
 
       //salt
       const salt = bcrypt.genSaltSync(10);
@@ -48,7 +48,7 @@ async function run() {
       const user_email = user.email;
       const existingUser = await userCollection.findOne({ email: user_email });
       if (existingUser) {
-        res.send("user already exists");
+        return res.status(400).json({ message: "User already exists" });
       } else {
         const hashedPassword = bcrypt.hashSync(user.password, salt);
 
