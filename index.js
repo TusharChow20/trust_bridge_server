@@ -56,6 +56,7 @@ async function run() {
           name: user.name,
           email: user_email,
           password: hashedPassword,
+          role: "user",
         });
         res.send(result);
       }
