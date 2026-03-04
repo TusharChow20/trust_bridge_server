@@ -36,6 +36,7 @@ async function run() {
 
     const database = client.db("TrustBridge");
     const userCollection = database.collection("users");
+    const productCollection = database.collection("allProducts");
 
     //register user #########################################
     app.post("/register", async (req, res) => {
@@ -84,6 +85,12 @@ async function run() {
         name: findUser.name,
         email: findUser.email,
       });
+    });
+
+    //all products ==================###############################
+    app.get("/allProducts", async (req, res) => {
+      const result = await productCollection.find().toArray();
+      res.send(result);
     });
 
     // Send a ping to confirm a successful connection
