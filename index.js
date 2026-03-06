@@ -4,11 +4,23 @@ require("dotenv").config();
 const app = express();
 const port = 4000;
 const bcrypt = require("bcryptjs");
-
+const multer = require("multer");
+const cloudinary = require("cloudinary").v2;
 // Middleware
 app.use(cors());
 app.use(express.json());
+//cloudinary store
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
+});
 
+const storage = multer.memoryStorage();
+const upload = multer({
+  storage,
+  limits: { fileSize: 5 * 1024 * 1024 },
+});
 app.get("/", (req, res) => {
   res.send("Hello World!");
 });
@@ -86,18 +98,45 @@ async function run() {
         email: findUser.email,
       });
     });
-
-    //all products ==================###############################
+    //all get products==================###############################
     app.get("/allProducts", async (req, res) => {
       const result = await productCollection.find().toArray();
       res.send(result);
     });
-
-    //post selling product
+    //all products ==================###############################
     app.post("/allProducts", async (req, res) => {
       const data = req.body;
-      const result = await productCollection.insertOne(data);
+
+      const result = await productCollection.insertOne({
+        ...data,
+        createdAt: new Date(),
+      });
+
       res.send(result);
+    });
+    //upload to cloudinary*******************************
+    app.post("/upload", upload.single("image"), async (req, res) => {
+      try {
+        const file = req.file;
+
+        if (!file) {
+          return res.status(400).send({ message: "No file uploaded" });
+        }
+
+        const result = await cloudinary.uploader.upload(
+          `data:${file.mimetype};base64,${file.buffer.toString("base64")}`,
+          {
+            folder: "trustbridge_products",
+          },
+        );
+
+        res.send({
+          imageUrl: result.secure_url,
+        });
+      } catch (error) {
+        console.log(error);
+        res.status(500).send({ message: "Upload failed" });
+      }
     });
 
     // Send a ping to confirm a successful connection
