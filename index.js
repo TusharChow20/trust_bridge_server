@@ -91,11 +91,13 @@ async function run() {
       if (!passwordsMatch) {
         return res.status(401).send({ message: "Wrong password" });
       }
+      console.log(findUser);
 
       res.send({
         _id: findUser._id,
         name: findUser.name,
         email: findUser.email,
+        role: findUser.role,
       });
     });
     //all get products==================###############################
