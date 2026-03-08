@@ -91,7 +91,7 @@ async function run() {
       if (!passwordsMatch) {
         return res.status(401).send({ message: "Wrong password" });
       }
-      console.log(findUser);
+      // console.log(findUser);
 
       res.send({
         _id: findUser._id,
@@ -100,6 +100,18 @@ async function run() {
         role: findUser.role,
       });
     });
+
+    //update user ---------------------------------------------------
+    app.patch("/updateUser", async (req, res) => {
+      const data = req.body;
+      console.log(data);
+      const result = await userCollection.updateOne(
+        { email: data.email },
+        { $set: { name: data.name } },
+      );
+      res.send(result);
+    });
+
     //all get products==================###############################
     app.get("/allProducts", async (req, res) => {
       const result = await productCollection.find().toArray();
